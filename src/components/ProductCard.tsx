@@ -37,15 +37,20 @@ export function ProductCard({
       className="glass-panel overflow-hidden rounded-2xl"
     >
       <div className="relative h-48 w-full">
-        <Image src={product.image} alt={product.name} fill className="object-cover" />
+        <Image src={product.image} alt={product.title} fill className="object-cover" />
       </div>
       <div className="p-5">
-        <h3 className="text-base font-medium text-white">{product.name}</h3>
+        <h3 className="text-base font-medium text-white">{product.title}</h3>
         <div className="mt-3 flex items-center justify-between">
           <p className="text-lg font-semibold text-cyan-200">${product.price.toFixed(2)}</p>
-          <span className="rounded-full border border-fuchsia-300/40 bg-fuchsia-400/20 px-2.5 py-1 text-xs text-fuchsia-100">
-            {product.confidence}% match
-          </span>
+          <a
+            href={product.link}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-fuchsia-300/40 bg-fuchsia-400/20 px-2.5 py-1 text-xs text-fuchsia-100"
+          >
+            View deal
+          </a>
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
           <span className={`rounded-full border px-2.5 py-1 text-xs ${badgeClass}`}>

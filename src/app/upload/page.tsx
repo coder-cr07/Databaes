@@ -5,16 +5,20 @@ import { useRouter } from "next/navigation";
 import { FloatingParticles } from "@/components/FloatingParticles";
 import { Navbar } from "@/components/Navbar";
 import { UploadBox } from "@/components/UploadBox";
+import { detectKeywordFromImage } from "@/data/products";
 
 export default function UploadPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const onAnalyze = () => {
-    setLoading(true);
-    setTimeout(() => {
-      router.push("/results");
-    }, 1800);
+  const onAnalyze = async (payload: { fileName: string; imageDataUrl: string }) => {
+    try {
+      setLoading(true);
+      const keyword = await detectKeywordFromImage(payload);
+      router.push(`/results?keyword=${encodeURIComponent(keyword)}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

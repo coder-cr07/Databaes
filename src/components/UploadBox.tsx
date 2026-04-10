@@ -4,16 +4,18 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 
 type UploadBoxProps = {
-  onAnalyze: () => void;
+  onAnalyze: (payload: { fileName: string; imageDataUrl: string }) => void;
   loading: boolean;
 };
 
 export function UploadBox({ onAnalyze, loading }: UploadBoxProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string>("");
   const [dragging, setDragging] = useState(false);
 
   const processFile = (file: File) => {
+    setFileName(file.name);
     const reader = new FileReader();
     reader.onloadend = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
@@ -73,7 +75,10 @@ export function UploadBox({ onAnalyze, loading }: UploadBoxProps) {
       <button
         type="button"
         disabled={!preview || loading}
-        onClick={onAnalyze}
+        onClick={() => {
+          if (!preview) return;
+          onAnalyze({ fileName, imageDataUrl: preview });
+        }}
         className="neon-btn mx-auto mt-8 block disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? "Analyzing image using AI..." : "Analyze with AI"}
