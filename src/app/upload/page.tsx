@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FloatingParticles } from "@/components/FloatingParticles";
 import { Navbar } from "@/components/Navbar";
 import { UploadBox } from "@/components/UploadBox";
-import { detectKeywordFromImage } from "@/data/products";
+import { detectKeywordFromImage, hashSeed } from "@/data/products";
 
 export default function UploadPage() {
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,8 @@ export default function UploadPage() {
     try {
       setLoading(true);
       const keyword = await detectKeywordFromImage(payload);
-      router.push(`/results?keyword=${encodeURIComponent(keyword)}`);
+      const sig = String(hashSeed(payload.imageDataUrl.slice(0, 512)));
+      router.push(`/results?keyword=${encodeURIComponent(keyword)}&sig=${encodeURIComponent(sig)}`);
     } finally {
       setLoading(false);
     }

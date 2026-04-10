@@ -44,6 +44,9 @@ function loadTrackingState(): { targetPrices: PriceMap; statusMap: StatusMap } {
 export default function ResultsPage() {
   const searchParams = useSearchParams();
   const keyword = (searchParams.get("keyword") ?? "tech").toLowerCase();
+  const pageSeedParam = searchParams.get("sig");
+  const parsedSeed = pageSeedParam ? Number.parseInt(pageSeedParam, 10) : 0;
+  const pageSeed = Number.isFinite(parsedSeed) ? parsedSeed : 0;
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -80,7 +83,8 @@ export default function ResultsPage() {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const fetched = await fetchProductsByKeyword(keyword);
+        const fetched = await fetchProductsByKeyword(keyword, { pageSeed });
+        console.log("[AURA] results page mapped products", { keyword, pageSeed, fetched });
         setProducts(fetched);
         setCurrentPrices(Object.fromEntries(fetched.map((item) => [item.id, item.price])));
       } catch {
@@ -90,7 +94,7 @@ export default function ResultsPage() {
       }
     };
     loadProducts();
-  }, [keyword]);
+  }, [keyword, pageSeed]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ targetPrices, statusMap }));

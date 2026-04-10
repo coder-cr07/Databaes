@@ -1,8 +1,46 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { FALLBACK_PRODUCT_IMAGE } from "@/data/products";
 import { Product, TrackingStatus } from "@/types/product";
+
+type ProductImageProps = {
+  src: string;
+  alt: string;
+};
+
+function ProductImage({ src, alt }: ProductImageProps) {
+  const [imageSrc, setImageSrc] = useState(src);
+  const useNextImage =
+    imageSrc.includes("cdn.dummyjson.com") || imageSrc.includes("images.unsplash.com");
+
+  return (
+    <>
+      {useNextImage ? (
+        <Image
+          src={imageSrc}
+          alt={alt}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+          onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
+        />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageSrc}
+          alt={alt}
+          className="h-full w-full object-cover"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageSrc(FALLBACK_PRODUCT_IMAGE)}
+        />
+      )}
+    </>
+  );
+}
 
 type ProductCardProps = {
   product: Product;
@@ -36,8 +74,8 @@ export function ProductCard({
       transition={{ duration: 0.2 }}
       className="glass-panel overflow-hidden rounded-2xl"
     >
-      <div className="relative h-48 w-full">
-        <Image src={product.image} alt={product.title} fill className="object-cover" />
+      <div className="relative h-48 w-full bg-slate-900/60">
+        <ProductImage key={`${product.id}-${product.image}`} src={product.image} alt={product.title} />
       </div>
       <div className="p-5">
         <h3 className="text-base font-medium text-white">{product.title}</h3>
